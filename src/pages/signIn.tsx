@@ -14,7 +14,7 @@ export default function SignIn() {
   const { data } = useSession();
 
   const handlerSignUp = () => {
-    router.push("create");
+    router.push("create-account");
   };
 
   return (
@@ -82,6 +82,7 @@ export default function SignIn() {
             onClick={(e) => {
               e.preventDefault();
               signIn("github");
+              router.push("finance-dashboard");
             }}
             className="w-full bg-[#202024] text-white hover:text-white border-[#202024] hover:bg-[#29292e]"
           >

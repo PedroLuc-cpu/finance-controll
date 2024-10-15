@@ -37,7 +37,7 @@ export default function Recovery() {
           </form>
           <div className="mt-6">
             <Link
-              href="/signin"
+              href="/signIn"
               className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />

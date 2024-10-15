@@ -1,8 +1,12 @@
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { NextAuthOptions } from "next-auth";
+import jwt from "jsonwebtoken";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/prisma";
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
   },
@@ -26,9 +30,17 @@ const authOptions: NextAuthOptions = {
       return token;
     },
 
-    session: ({ session, token }) => {
-      if (token) {
-        session.user?.email;
+    session: ({ session, user }) => {
+      const signingSecret = process.env.SUPABASE_JWT_SECRET;
+      if (signingSecret) {
+        const payload = {
+          aud: "authenticated",
+          exp: Math.floor(new Date(session.expires).getTime() / 1000),
+          sub: user.id,
+          email: user.email,
+          role: "authenticated",
+        };
+        session.supabaseAccessToken = jwt.sign(payload, signingSecret);
       }
       return session;
     },
