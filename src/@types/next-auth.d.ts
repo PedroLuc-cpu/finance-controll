@@ -11,14 +11,18 @@ declare module "next-auth" {
       id?: string;
     } & DefaultSession["user"];
     accessToken?: string;
+    error?: "RefreshTokenError";
   }
-
-  interface DefaultJWT extends Record<string, unknown> {
-    accessToken?: string;
-    id: string;
-  }
-
   interface Profile {
     id?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    access_token: string;
+    expires_at: number;
+    refresh_token?: string;
+    error?: "RefreshTokenError";
   }
 }

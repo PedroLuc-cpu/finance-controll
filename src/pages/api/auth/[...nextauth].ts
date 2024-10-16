@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
+
 import { NextAuthOptions } from "next-auth";
 import jwt from "jsonwebtoken";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -30,25 +32,51 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    session: ({ session, user }) => {
-      const signingSecret = process.env.SUPABASE_JWT_SECRET;
-      if (signingSecret) {
-        const payload = {
-          aud: "authenticated",
-          exp: Math.floor(new Date(session.expires).getTime() / 1000),
-          sub: user.id,
-          email: user.email,
-          role: "authenticated",
-        };
-        session.supabaseAccessToken = jwt.sign(payload, signingSecret);
+    async signIn({ account }) {
+      if (account?.provider === "google") {
+        if (
+          !account?.scope?.includes("https://www.googleapis.com/auth/calendar")
+        ) {
+          return "/register/connect-calendar/?error=permissions";
+        }
       }
-      return session;
+      return true;
+    },
+
+    session: ({ session, user }) => {
+      return {
+        ...session,
+        user,
+      };
     },
   },
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID as string,
       clientSecret: process.env.GITHUB_SECRET as string,
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      authorization: {
+        params: {
+          prompt: "consent",
+          response_type: "code",
+          access_type: "offline",
+          scope:
+            "https://mail.google.com/  https://www.googleapis.com/auth/calendar",
+        },
+        // https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
+      },
+      profile(profile: GoogleProfile) {
+        return {
+          id: profile.id,
+          name: profile.name,
+          username: "",
+          email: profile.email,
+          avatar_url: profile.avatar_url,
+        };
+      },
     }),
   ],
 };

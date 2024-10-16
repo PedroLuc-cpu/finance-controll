@@ -20,6 +20,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { TooltipContent, TooltipPortal } from "@radix-ui/react-tooltip";
 
 export default function FinanceDashboard() {
   // Mock data - replace with actual data in a real application
@@ -29,7 +37,7 @@ export default function FinanceDashboard() {
     balance: 1500,
   };
 
-  //const { data: session } = useSession();
+  const { data: session } = useSession();
 
   const router = useRouter();
 
@@ -82,10 +90,27 @@ export default function FinanceDashboard() {
   return (
     <div className="container mx-auto p-4 space-y-4">
       <div className="flex justify-between">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Avatar>
+                <AvatarImage
+                  src={session?.user.image as string}
+                  alt={session?.user.image as string}
+                />
+                <AvatarFallback />
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent>
+                <Button variant="destructive" onClick={handleSignOut}>
+                  Sair
+                </Button>
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        </TooltipProvider>
         <h1 className="text-3xl font-bold mb-6">Finance Dashboard</h1>
-        <Button variant="destructive" onClick={handleSignOut}>
-          Sair
-        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">

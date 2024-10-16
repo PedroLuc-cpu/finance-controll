@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, Github } from "lucide-react";
+import { Chrome, Eye, EyeOff, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 
 export default function SignIn() {
@@ -82,12 +82,22 @@ export default function SignIn() {
             onClick={(e) => {
               e.preventDefault();
               signIn("github");
-              router.push("finance-dashboard");
             }}
             className="w-full bg-[#202024] text-white hover:text-white border-[#202024] hover:bg-[#29292e]"
           >
             <Github className="mr-2 h-4 w-4" />
             Entre com github
+          </Button>
+          <Button
+            variant="outline"
+            onClick={(e) => {
+              e.preventDefault();
+              signIn("google");
+            }}
+            className="w-full bg-[#202024] text-white hover:text-white border-[#202024] hover:bg-[#29292e]"
+          >
+            <Chrome className="mr-2 h-4 w-4" />
+            Entre com Google
           </Button>
           <Button
             onClick={handlerSignUp}
