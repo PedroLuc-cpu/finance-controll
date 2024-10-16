@@ -3,7 +3,6 @@ import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
 
 import { NextAuthOptions } from "next-auth";
-import jwt from "jsonwebtoken";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/prisma";
 

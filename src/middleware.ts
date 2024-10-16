@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export default function middleware(request: NextRequest) {
-  const token = request.cookies.get("auth_token")?.value;
+  const token = request.cookies.get("")?.value;
 
-  console.log(token);
+  console.log("seu token: " + token);
 
   const signInURL = new URL("/", request.url);
   const financeDashboard = new URL("/finance-dashboard", request.url);
