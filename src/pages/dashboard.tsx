@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/router";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import {
@@ -39,11 +38,8 @@ export default function FinanceDashboard() {
 
   const { data: session } = useSession();
 
-  const router = useRouter();
-
   const handleSignOut = () => {
     signOut();
-    router.back();
   };
 
   const recentTransactions = [

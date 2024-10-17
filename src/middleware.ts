@@ -1,25 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default function middleware(request: NextRequest) {
-  const token = request.cookies.get("")?.value;
+export function middleware(request: NextRequest) {
+  const currentUser = request.cookies.get("next-auth.session-token")?.value;
 
-  console.log("seu token: " + token);
-
-  const signInURL = new URL("/", request.url);
-  const financeDashboard = new URL("/finance-dashboard", request.url);
-
-  if (!token) {
-    if (request.nextUrl.pathname === "/") {
-      return NextResponse.next();
-    }
-    return NextResponse.redirect(signInURL);
+  if (currentUser && !request.nextUrl.pathname.startsWith("/dashboard")) {
+    return Response.redirect(new URL("/dashboard", request.url));
   }
 
-  if (request.nextUrl.pathname === "/") {
-    return NextResponse.redirect(financeDashboard);
+  if (!currentUser && !request.nextUrl.pathname.startsWith("/signIn")) {
+    return Response.redirect(new URL("/signIn", request.url));
   }
 }
 
 export const config = {
-  matcher: ["/", "/finance-dashboard"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|.*\\.png$|recovery|create-account).*)",
+  ],
 };
