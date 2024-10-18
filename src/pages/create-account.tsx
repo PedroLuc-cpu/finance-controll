@@ -6,10 +6,56 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { EyeIcon, EyeOffIcon, MoveLeft } from "lucide-react";
 import Link from "next/link";
+import { z } from "zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+
+const createUserSchema = z.object({
+  fullName: z.string().max(5, { message: "Nome deve no minimo 5 caracteres" }),
+  email: z.string().email(),
+  passaword: z.string(),
+  confirmedPassaword: z.string(),
+  isNotification: z.string(),
+});
+
+export type UserSchema = z.infer<typeof createUserSchema>;
 
 export default function AreateAccount() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UserSchema>();
+
+  const onSubmit: SubmitHandler<UserSchema> = async (data) => {
+    try {
+      const response = await fetch("/api/user/create-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: data.fullName,
+          email: data.email,
+          password: data.passaword,
+          confirmedPassword: data.confirmedPassaword,
+          isNotification: data.isNotification,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert("Usuário criado com sucesso!");
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao criar usuário: ${errorData.message}`);
+      }
+    } catch (error) {
+      alert("Erro ao se comunicar com o servidor. Tente novamente.");
+      console.error("Erro ao se comunicar com a API:", error);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen text-white">
@@ -23,7 +69,7 @@ export default function AreateAccount() {
           </Link>
           Cadastre-se gratuitamente
         </h2>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-2">
             <Label
               htmlFor="fullName"
@@ -32,6 +78,7 @@ export default function AreateAccount() {
               Nome completo
             </Label>
             <Input
+              {...register("fullName", { required: true })}
               id="fullName"
               placeholder="Seu nome completo"
               className="w-full bg-[#202024] border-[#202024] text-white placeholder-gray-400"
@@ -45,6 +92,7 @@ export default function AreateAccount() {
               E-mail
             </Label>
             <Input
+              {...register("email", { required: true })}
               id="email"
               type="email"
               placeholder="Seu e-mail"
@@ -60,6 +108,7 @@ export default function AreateAccount() {
             </Label>
             <div className="relative">
               <Input
+                {...register("passaword", { required: true })}
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Deve ter no mínimo 7 caracteres"
@@ -87,6 +136,7 @@ export default function AreateAccount() {
             </Label>
             <div className="relative">
               <Input
+                {...register("confirmedPassaword", { required: true })}
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Deve ter no mínimo 7 caracteres"
@@ -106,7 +156,10 @@ export default function AreateAccount() {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Checkbox id="recaptcha" />
+            <Checkbox
+              id="recaptcha"
+              {...register("isNotification", { required: true })}
+            />
             <label
               htmlFor="recaptcha"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-zinc-400"
