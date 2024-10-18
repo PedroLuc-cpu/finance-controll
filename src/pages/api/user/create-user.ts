@@ -1,5 +1,6 @@
 import { prisma } from "@/prisma";
 import type { NextApiRequest, NextApiResponse } from "next";
+import bcrypt from "bcryptjs";
 
 type Data = {
   message: string;
@@ -34,13 +35,15 @@ export default async function handler(
         return res.status(400).json({ message: "Email já está registrado" });
       }
 
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       // Cria o usuário
       const user = await prisma.user.create({
         data: {
           name,
           email,
-          password, // Idealmente, você deve hashear a senha antes de salvar no banco
-          confirmedPassword, // Por razões de segurança, isso não deve ser salvo; apenas para validação no código
+          password: hashedPassword, // Idealmente, você deve hashear a senha antes de salvar no banco
+          confirmedPassword: hashedPassword, // Por razões de segurança, isso não deve ser salvo; apenas para validação no código
           isNotification: isNotification ?? "off",
           image,
         },
