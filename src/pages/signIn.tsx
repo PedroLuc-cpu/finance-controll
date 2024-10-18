@@ -19,7 +19,7 @@ export default function SignIn() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#121214] text-white">
-      <div className="w-full max-w-md p-8">
+      <div className="w-full max-w-md p-8 bg-zinc-800 rounded-md">
         <div className="flex justify-center mb-8">
           <h1>{session?.user?.email}</h1>
         </div>
@@ -67,13 +67,11 @@ export default function SignIn() {
           </div>
           <a
             href="recovery"
-            className="block text-sm text-[#8257e5] hover:underline"
+            className="block text-sm text-gray-500 hover:text-gray-400 hover:underline"
           >
             Esqueci minha senha
           </a>
-          <Button className="w-full bg-[#8257e5] hover:bg-[#9466ff] text-white">
-            Entrar
-          </Button>
+          <Button className="w-full text-white">Entrar</Button>
         </form>
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-400 mb-2">Ou se preferir</p>

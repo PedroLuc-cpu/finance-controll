@@ -28,12 +28,10 @@ export default function Recovery() {
                 id="email"
                 type="email"
                 placeholder="Pedrolucas_gta2015@hotmail.com"
-                className="bg-[#121214] border-[#8257e5] text-white placeholder-gray-400"
+                className="bg-[#121214] text-white placeholder-gray-400"
               />
             </div>
-            <Button className="w-full bg-[#8257e5] hover:bg-[#9466ff] text-white">
-              Recuperar minha senha
-            </Button>
+            <Button className="w-full text-white">Recuperar minha senha</Button>
           </form>
           <div className="mt-6">
             <Link
