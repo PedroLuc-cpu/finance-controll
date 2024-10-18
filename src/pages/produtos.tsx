@@ -1,9 +1,9 @@
 import LayoutPage from "@/layout/LayouPage";
 
-export default function dashboard() {
+export default function Produtos() {
   return (
     <LayoutPage>
-      <h1>Meu dashboard</h1>
+      <h1>Produtos</h1>
     </LayoutPage>
   );
 }

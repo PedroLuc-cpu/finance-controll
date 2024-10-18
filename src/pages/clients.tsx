@@ -1,9 +1,9 @@
 import LayoutPage from "@/layout/LayouPage";
 
-export default function dashboard() {
+export default function Clients() {
   return (
     <LayoutPage>
-      <h1>Meu dashboard</h1>
+      <h1>Clientes</h1>
     </LayoutPage>
   );
 }
