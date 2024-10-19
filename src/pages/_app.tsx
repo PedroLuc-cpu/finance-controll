@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/components/theme-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "@/styles/globals.css";
 import { SessionProvider } from "next-auth/react";
