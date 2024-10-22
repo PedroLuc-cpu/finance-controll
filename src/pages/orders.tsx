@@ -97,7 +97,6 @@ export default function Orders({
       currency: "BRL",
     });
   }
-  console.log(pedidos);
   const totalThisWeek = roundToTwoDecimalPlaces(
     calculateTotalBoletos(clientes, isCurrentWeek)
   );

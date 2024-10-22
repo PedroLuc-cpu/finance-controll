@@ -48,7 +48,7 @@ export const columns: ColumnDef<Produto>[] = [
     // },
   },
   {
-    accessorKey: "name",
+    accessorKey: "nome",
     header: ({ column }) => {
       return (
         <Button
@@ -62,18 +62,18 @@ export const columns: ColumnDef<Produto>[] = [
     },
   },
   {
-    accessorKey: "category",
+    accessorKey: "categoria",
     header: "Categoria",
   },
   {
-    accessorKey: "description",
+    accessorKey: "descricao",
     header: "descrição",
   },
   {
-    accessorKey: "price",
-    header: () => <div>Preço</div>,
+    accessorKey: "precoCusto",
+    header: () => <div>Preço de Custo</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("price"));
+      const amount = parseFloat(row.getValue("precoCusto"));
       const formatted = new Intl.NumberFormat("pt-BR", {
         style: "currency",
         currency: "BRL",
@@ -82,16 +82,26 @@ export const columns: ColumnDef<Produto>[] = [
     },
   },
   {
-    accessorKey: "inStock",
-    header: "Em Estoque",
+    accessorKey: "precoVenda",
+    header: () => <div>Preço</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("precoVenda"));
+      const formatted = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(amount);
+      return <div className="font-medium">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "quantidadeEstoque",
+    header: "Estoque",
     cell: ({ row }) => {
       return (
         <div
-          className={
-            row.original.inStock === true ? "text-green-500" : "text-red-500"
-          }
+          className={row.original.quantidadeEstoque === 0 ? "text-red-500" : ""}
         >
-          {row.original.inStock === true ? "Em estoque" : "Sem estoque"}
+          {row.original.quantidadeEstoque}
         </div>
       );
     },

@@ -8,10 +8,15 @@ import { Produto } from "@/model/produtos";
 
 export const getStaticProps = (async (context) => {
   const res = await fetch("http://localhost:3000/api/produtos/todosprodutos");
+  const res_produtoPorId = await fetch(
+    `http://localhost:3000/api/produtos/${1}`
+  );
   const produto: Produto[] = await res.json();
+  const produtoPorId: Produto = await res_produtoPorId.json();
   return {
     props: {
       produto,
+      produtoPorId,
     },
   };
 }) satisfies GetStaticProps<{
@@ -20,9 +25,8 @@ export const getStaticProps = (async (context) => {
 
 export default function Produtos({
   produto,
+  produtoPorId,
 }: InferGetServerSidePropsType<typeof getStaticProps>) {
-  console.log(produto);
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-muted/40">
@@ -32,7 +36,10 @@ export default function Produtos({
         </div>
         <div className="flex-1 overflow-y-auto p-6">
           <main className="container mx-auto py-10">
-            <DataTable columns={columns} data={produto} />
+            <DataTable
+              columns={columns}
+              data={produto}
+            />
           </main>
         </div>
       </div>
