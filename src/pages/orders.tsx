@@ -54,7 +54,7 @@ import { isCurrentMonth } from "@/lib/isCurrentMonth";
 import { isCurrentWeek } from "@/lib/isCurrentWeek";
 import { Clientes } from "@/model/clientes";
 import { Pedidos } from "@/model/pedidos";
-import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import { SelectTrigger, SelectValue } from "@radix-ui/react-select";
 
 import {
