@@ -1,4 +1,4 @@
-import { Registry } from "@/registry/schema"
+import { Registry } from "@/registry/schema";
 
 export const charts: Registry = [
   // Area Charts
@@ -577,4 +577,4 @@ export const charts: Registry = [
     category: "Charts",
     subcategory: "Tooltip",
   },
-]
+];

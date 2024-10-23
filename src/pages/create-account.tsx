@@ -22,11 +22,7 @@ export type UserSchema = z.infer<typeof createUserSchema>;
 export default function AreateAccount() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<UserSchema>();
+  const { register, handleSubmit } = useForm<UserSchema>();
 
   const onSubmit: SubmitHandler<UserSchema> = async (data) => {
     try {

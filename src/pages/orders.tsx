@@ -72,10 +72,10 @@ import { GetStaticProps, InferGetServerSidePropsType } from "next";
 export const getStaticProps = (async (context) => {
   console.log(context);
   const res_clientes = await fetch(
-    "http://localhost:3000/api/clientes/todosClientes"
+    "http://localhost:3000/api/clientes/todosClientes",
   );
   const res_pedidos = await fetch(
-    "http://localhost:3000/api/pedidos/todospedidos"
+    "http://localhost:3000/api/pedidos/todospedidos",
   );
 
   const clientes: Clientes[] = await res_clientes.json();
@@ -97,18 +97,19 @@ export default function Orders({
       currency: "BRL",
     });
   }
-  const totalThisWeek = roundToTwoDecimalPlaces(
-    calculateTotalBoletos(clientes, isCurrentWeek)
-  );
-  const totalThisMonth = roundToTwoDecimalPlaces(
-    calculateTotalBoletos(clientes, isCurrentMonth)
-  );
 
-  const growthPercentageWeek = 0.25; // Crescimento de 25% da semana passada
-  const growthPercentageMonth = 0.1;
+  // const totalThisWeek = roundToTwoDecimalPlaces(
+  //   calculateTotalBoletos(clientes, isCurrentWeek)
+  // );
+  // const totalThisMonth = roundToTwoDecimalPlaces(
+  //   calculateTotalBoletos(clientes, isCurrentMonth)
+  // );
 
-  const totalLastWeek = totalThisWeek / (1 + growthPercentageWeek);
-  const totalLastMonth = totalThisMonth / (1 + growthPercentageMonth);
+  // const growthPercentageWeek = 0.25; // Crescimento de 25% da semana passada
+  // const growthPercentageMonth = 0.1;
+
+  // const totalLastWeek = totalThisWeek / (1 + growthPercentageWeek);
+  // const totalLastMonth = totalThisMonth / (1 + growthPercentageMonth);
 
   return (
     <SidebarProvider>
@@ -142,7 +143,7 @@ export default function Orders({
                             <Label htmlFor="client" className="text-right">
                               Cliente
                             </Label>
-                            <Select>
+                            {/* <Select>
                               <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="Cliente" />
                               </SelectTrigger>
@@ -156,7 +157,7 @@ export default function Orders({
                                   </SelectItem>
                                 ))}
                               </SelectContent>
-                            </Select>
+                            </Select> */}
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="username" className="text-right">
@@ -176,12 +177,12 @@ export default function Orders({
                   <CardHeader className="pb-2">
                     <CardDescription>Essa semana</CardDescription>
                     <CardTitle className="text-4xl">
-                      ${formatToCurrency(totalLastWeek)}
+                      ${formatToCurrency(10000)}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-xs text-muted-foreground">
-                      +{growthPercentageWeek}% da semana passada
+                      +{1000}% da semana passada
                     </div>
                   </CardContent>
                   <CardFooter>
@@ -192,12 +193,12 @@ export default function Orders({
                   <CardHeader className="pb-2">
                     <CardDescription>Este mês</CardDescription>
                     <CardTitle className="text-4xl">
-                      ${formatToCurrency(totalLastMonth)}
+                      ${formatToCurrency(10000)}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-xs text-muted-foreground">
-                      +{growthPercentageMonth}% do mês passado
+                      +{10000}% do mês passado
                     </div>
                   </CardContent>
                   <CardFooter>
@@ -277,7 +278,7 @@ export default function Orders({
                             </TableHead>
                           </TableRow>
                         </TableHeader>
-                        <TableBody>
+                        {/* <TableBody>
                           {pedidos.map((pedidos) => (
                             <TableRow className="bg-accent">
                               <TableCell>
@@ -311,7 +312,7 @@ export default function Orders({
                               </TableCell>
                             </TableRow>
                           ))}
-                        </TableBody>
+                        </TableBody> */}
                       </Table>
                     </CardContent>
                   </Card>

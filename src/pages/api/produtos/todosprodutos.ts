@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Produto[]>
+  res: NextApiResponse<Produto[]>,
 ) {
   return res.json([
     {

@@ -7,7 +7,7 @@ const SECRET_KEY = process.env.JWT_SECRET || "your-secret-key";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Método não permitido" });
@@ -44,7 +44,7 @@ export default async function handler(
         name: user.name,
       },
       SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     // Retornar o token para o cliente

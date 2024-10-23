@@ -5,7 +5,7 @@ import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Clientes[] | { message: string }>
+  res: NextApiResponse<Clientes[] | { message: string }>,
 ) {
   const session = await getServerSession(req, res, authOptions);
   if (session) {
@@ -46,7 +46,7 @@ export default async function handler(
           },
         ],
         status: "active",
-      }
+      },
     ]);
   } else {
     res.send({

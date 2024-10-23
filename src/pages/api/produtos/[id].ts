@@ -276,7 +276,7 @@ const produtos: Produto[] = [
 
 export default async function handle(
   req: NextApiRequest,
-  res: NextApiResponse<Produto | { message: string }>
+  res: NextApiResponse<Produto | { message: string }>,
 ) {
   const session = await getServerSession(req, res, authOptions);
 

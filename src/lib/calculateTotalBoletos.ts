@@ -3,7 +3,7 @@ import { Clientes } from "@/model/clientes";
 // Função para calcular o valor total de boletos em um determinado intervalo
 export function calculateTotalBoletos(
   clientes: Clientes[],
-  dateChecker: (date: string) => boolean
+  dateChecker: (date: string) => boolean,
 ) {
   return clientes.reduce((total, cliente) => {
     const totalCliente = cliente.boletos.reduce((subTotal, boleto) => {

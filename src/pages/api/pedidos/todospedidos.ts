@@ -5,7 +5,7 @@ import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Pedidos[] | { menssage: string }>
+  res: NextApiResponse<Pedidos[] | { menssage: string }>,
 ) {
   const session = await getServerSession(req, res, authOptions);
 
