@@ -9,11 +9,9 @@ import {
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppHeader } from "@/layout/app-header";
 import { AppSidebar } from "@/layout/app-sidebar";
-import { CalendarDateRangePicker } from "./components/dashboard/date-range-picker";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Overview } from "./components/dashboard/overview";
-import { RecentSales } from "./components/dashboard/recent-sales";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +20,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { CalendarDateRangePicker } from "@/components/dashboard/date-range-picker";
+import { Overview } from "@/components/dashboard/overview";
+import { RecentSales } from "@/components/dashboard/recent-sales";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { Badge } from "@/components/ui/badge";
 
 export const description = "A collection of health charts.";
 
@@ -68,17 +75,12 @@ export default function dashboard() {
               <Tabs defaultValue="overview" className="space-y-4">
                 <TabsList>
                   <TabsTrigger value="overview">Visão geral</TabsTrigger>
-                  <TabsTrigger value="analytics" disabled>
-                    Análise
-                  </TabsTrigger>
-                  <TabsTrigger value="reports" disabled>
-                    Relatórios
-                  </TabsTrigger>
+                  <TabsTrigger value="reports">Relatórios</TabsTrigger>
                   <TabsTrigger value="notifications" disabled>
                     Notificações
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="overview" className="space-y-4">
+                <TabsContent value="reports" className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -205,6 +207,30 @@ export default function dashboard() {
                       </CardContent>
                     </Card>
                   </div>
+                </TabsContent>
+                <TabsContent value="overview" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <Tabs defaultValue="allMail">
+                        <div className="flex justify-between items-center">
+                          <CardTitle>Inbox</CardTitle>
+                          <TabsList>
+                            <TabsTrigger value="allMail">Todos</TabsTrigger>
+                            <TabsTrigger value="unRead">Não Lidos</TabsTrigger>
+                          </TabsList>
+                        </div>
+                        <TabsContent value="allMail">
+                          <ResizablePanelGroup direction="horizontal">
+                            <ResizablePanel>One</ResizablePanel>
+                            <ResizableHandle withHandle />
+                            <ResizablePanel>TOW</ResizablePanel>
+                            <ResizableHandle withHandle />
+                            <ResizablePanel>Tree</ResizablePanel>
+                          </ResizablePanelGroup>
+                        </TabsContent>
+                      </Tabs>
+                    </CardHeader>
+                  </Card>
                 </TabsContent>
               </Tabs>
             </div>

@@ -1,10 +1,10 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppHeader } from "@/layout/app-header";
 import { AppSidebar } from "@/layout/app-sidebar";
-import { columns } from "./components/payments/columns";
-import { DataTable } from "./components/payments/data-table";
 import { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { Produto } from "@/model/produtos";
+import { DataTable } from "@/components/payments/data-table";
+import { columns } from "@/components/payments/columns";
 
 export const getStaticProps = (async (context) => {
   const res = await fetch("http://localhost:3000/api/produtos/todosprodutos");

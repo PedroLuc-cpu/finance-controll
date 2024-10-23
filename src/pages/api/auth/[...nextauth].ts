@@ -30,18 +30,6 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-
-    async signIn({ account }) {
-      if (account?.provider === "google") {
-        if (
-          !account?.scope?.includes("https://www.googleapis.com/auth/calendar")
-        ) {
-          return "/register/connect-calendar/?error=permissions";
-        }
-      }
-      return true;
-    },
-
     session: ({ session, user }) => {
       return {
         ...session,
@@ -63,17 +51,15 @@ export const authOptions: NextAuthOptions = {
           response_type: "code",
           access_type: "offline",
           scope:
-            "https://mail.google.com/  https://www.googleapis.com/auth/calendar",
+            "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
         },
-        // https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
       },
       profile(profile: GoogleProfile) {
         return {
-          id: profile.id,
+          id: profile.sub,
           name: profile.name,
-          username: "",
           email: profile.email,
-          avatar_url: profile.avatar_url,
+          picture: profile.picture,
         };
       },
     }),
