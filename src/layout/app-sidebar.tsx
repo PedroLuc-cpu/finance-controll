@@ -122,7 +122,9 @@ export function AppSidebar() {
                       src={session?.user.image as string}
                       alt={session?.user.name as string}
                     />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">
+                      {session?.user.name?.substring(0, 1)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
@@ -148,7 +150,9 @@ export function AppSidebar() {
                         src={session?.user.image as string}
                         alt={session?.user.name as string}
                       />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                      <AvatarFallback className="rounded-lg">
+                        {session?.user.name?.substring(0, 1)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">

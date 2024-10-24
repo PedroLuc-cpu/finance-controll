@@ -10,7 +10,8 @@ export function middleware(request: NextRequest) {
       !request.nextUrl.pathname.startsWith("/produtos") &&
       !request.nextUrl.pathname.startsWith("/orders") &&
       !request.nextUrl.pathname.startsWith("/clients") &&
-      !request.nextUrl.pathname.startsWith("/dashboard")
+      !request.nextUrl.pathname.startsWith("/dashboard") &&
+      !request.nextUrl.pathname.startsWith("/settings")
     ) {
       return Response.redirect(new URL("/dashboard", request.url)); // Redireciona para orders se não for uma rota permitida
     }
