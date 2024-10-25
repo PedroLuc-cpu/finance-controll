@@ -32,7 +32,6 @@ import {
   PaginationItem,
 } from "@/components/ui/pagination";
 import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import {
@@ -46,16 +45,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppHeader } from "@/layout/app-header";
 import { AppSidebar } from "@/layout/app-sidebar";
-import {
-  calculateTotalBoletos,
-  roundToTwoDecimalPlaces,
-} from "@/lib/calculateTotalBoletos";
-import { isCurrentMonth } from "@/lib/isCurrentMonth";
-import { isCurrentWeek } from "@/lib/isCurrentWeek";
 import { Clientes } from "@/model/clientes";
 import { Pedidos } from "@/model/pedidos";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { SelectTrigger, SelectValue } from "@radix-ui/react-select";
 
 import {
   ChevronLeft,
@@ -98,18 +90,7 @@ export default function Orders({
     });
   }
 
-  // const totalThisWeek = roundToTwoDecimalPlaces(
-  //   calculateTotalBoletos(clientes, isCurrentWeek)
-  // );
-  // const totalThisMonth = roundToTwoDecimalPlaces(
-  //   calculateTotalBoletos(clientes, isCurrentMonth)
-  // );
 
-  // const growthPercentageWeek = 0.25; // Crescimento de 25% da semana passada
-  // const growthPercentageMonth = 0.1;
-
-  // const totalLastWeek = totalThisWeek / (1 + growthPercentageWeek);
-  // const totalLastMonth = totalThisMonth / (1 + growthPercentageMonth);
 
   return (
     <SidebarProvider>
