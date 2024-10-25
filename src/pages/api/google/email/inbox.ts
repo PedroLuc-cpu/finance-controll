@@ -21,7 +21,7 @@ export default async function handler(
 
   const gmail = google.calendar({
     version: "v3",
-    auth: await getGoogleAuthToken("cm2mb3p7i0004c3ba4j6my3g7"),
+    auth: await getGoogleAuthToken(user.id),
   });
 
   try {
