@@ -51,7 +51,23 @@ export const authOptions: NextAuthOptions = {
           response_type: "code",
           access_type: "offline",
           scope:
-            "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/userinfo.email " +
+            "https://www.googleapis.com/auth/userinfo.profile " +
+            "https://mail.google.com/ " +
+            "https://www.googleapis.com/auth/calendar " +
+            // "https://www.googleapis.com/auth/gmail.addons.current.action.compose " +
+            // "https://www.googleapis.com/auth/gmail.addons.current.message.action " +
+            // "https://www.googleapis.com/auth/gmail.addons.current.message.metadata " +
+            "https://www.googleapis.com/auth/gmail.addons.current.message.readonly " +
+            // "https://www.googleapis.com/auth/gmail.compose " +
+            // "https://www.googleapis.com/auth/gmail.insert " +
+            "https://www.googleapis.com/auth/gmail.labels ",
+          // "https://www.googleapis.com/auth/gmail.metadata " +
+          // "https://www.googleapis.com/auth/gmail.modify " +
+          // "https://www.googleapis.com/auth/gmail.readonly " +
+          // "https://www.googleapis.com/auth/gmail.send " +
+          // "https://www.googleapis.com/auth/gmail.settings.basic " +
+          // "https://www.googleapis.com/auth/gmail.settings.sharing ",
         },
       },
       profile(profile: GoogleProfile) {
@@ -59,7 +75,7 @@ export const authOptions: NextAuthOptions = {
           id: profile.sub,
           name: profile.name,
           email: profile.email,
-          avatar_url: profile.picture,
+          image: profile.picture,
         };
       },
     }),
