@@ -71,7 +71,7 @@ export default function dashboard() {
               <Tabs defaultValue="overview" className="space-y-4">
                 <TabsList>
                   <TabsTrigger value="overview">Visão geral</TabsTrigger>
-                  <TabsTrigger value="notifications">Notificações</TabsTrigger>
+                  <TabsTrigger value="inbox">Notificações</TabsTrigger>
                   <TabsTrigger value="reports">Relatórios</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview" className="space-y-4">
@@ -202,7 +202,7 @@ export default function dashboard() {
                     </Card>
                   </div>
                 </TabsContent>
-                <TabsContent value="notifications" className="space-y-4">
+                <TabsContent value="inbox" className="space-y-4">
                   <>
                     <div className="md:hidden">
                       <Image
@@ -229,6 +229,9 @@ export default function dashboard() {
                       />
                     </div>
                   </>
+                </TabsContent>
+                <TabsContent value="reports">
+                  <h1>Relatorios</h1>
                 </TabsContent>
               </Tabs>
             </div>
