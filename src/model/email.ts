@@ -1,3 +1,5 @@
+import { gmail_v1 } from "googleapis";
+
 interface Headers {
   name: string;
   value: string;
@@ -17,5 +19,5 @@ interface Payload {
 export interface Email {
   id: string;
   snippet: string;
-  payload: Payload;
+  payload: gmail_v1.Schema$MessagePart;
 }

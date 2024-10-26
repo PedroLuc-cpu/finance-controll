@@ -1,22 +1,23 @@
 import { getGoogleAuthToken } from "@/lib/google";
-import { google } from "googleapis";
+import { gmail_v1, google } from "googleapis";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/prisma";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { Email } from "@/model/email";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<Email[] | { message: string }>
 ) {
   try {
     const session = await getServerSession(req, res, authOptions);
-    if (!session) return res.status(401).json({ error: "Unauthorized" });
+    if (!session) return res.status(401).json({ message: "Unauthorized" });
 
     const user = await prisma.user.findUnique({
       where: { name: session.user.name as string },
     });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     console.log(user);
 
@@ -37,24 +38,23 @@ export default async function handler(
     }
 
     // Obter o conteúdo de cada mensagem
-    const messagesData = await Promise.all(
+    const messagesData: Email[] = await Promise.all(
       messages.map(async (msg) => {
         const message = await gmail.users.messages.get({
           userId: "me",
           id: msg.id as string,
-          
-        })
+        });
         return {
-          id: msg.id,
-          snippet: message.data.snippet, // Resumo da mensagem
-          payload: message.data.payload, // Dados completos da mensagem
+          id: msg.id as string,
+          snippet: message.data.snippet as string,
+          payload: message.data.payload as gmail_v1.Schema$MessagePart,
         };
       })
     );
 
-    res.status(200).json({ messages: messagesData });
+    res.status(200).json(messagesData);
   } catch (error) {
     console.error("Erro de permissão:", error);
-    res.status(403).json({ error: "Permissão insuficiente" });
+    res.status(403).json({ message: "Permissão insuficiente" });
   }
 }
