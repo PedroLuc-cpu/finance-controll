@@ -1,19 +1,23 @@
-import { ComponentProps } from "react";
+import { ComponentProps, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mail } from "../data";
 import { useMail } from "../use-mail";
 import { formatDistanceToNow } from "date-fns";
+import { Mails } from "@/model/email";
 
 interface MailListProps {
-  items: Mail[];
+  items: Mails[];
 }
 
 export function MailList({ items }: MailListProps) {
-  const [mail, setMail] = useMail();
-
+  const [mail, setMail] = useMail(items);
+  useEffect(() => {
+    if (!mail.selected && items.length > 0) {
+      setMail((prev) => ({ ...prev, selected: items[0].id }));
+    }
+  }, [items, mail, setMail]);
   return (
     <ScrollArea className="h-screen">
       <div className="flex flex-col gap-2 p-4 pt-0">

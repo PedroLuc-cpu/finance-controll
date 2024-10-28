@@ -24,13 +24,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
-
-import { type Mail } from "../data";
 import { useMail } from "../use-mail";
 import { AccountSwitcher } from "./account-switcher";
 import { Nav } from "./nav";
 import { MailList } from "./mail-list";
 import { MailDisplay } from "./mail-display";
+import { type Mails } from "@/model/email";
 
 interface MailProps {
   accounts: {
@@ -38,7 +37,7 @@ interface MailProps {
     email: string;
     icon: React.ReactNode;
   }[];
-  mails: Mail[];
+  mails: Mails[];
   defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
   navCollapsedSize: number;
@@ -52,7 +51,7 @@ export function Mail({
   navCollapsedSize,
 }: MailProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
-  const [mail, setMail] = useMail();
+  const [mail, setMail] = useMail(mails);
 
   return (
     <TooltipProvider delayDuration={0}>

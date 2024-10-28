@@ -1,9 +1,11 @@
 import { gmail_v1 } from "googleapis";
+import { Key } from "lucide-react";
 
-interface Headers {
+export interface Headers {
   name: string;
   value: string;
 }
+
 interface Body {
   size: number;
   data: string;
@@ -21,3 +23,14 @@ export interface Email {
   snippet: string;
   payload: gmail_v1.Schema$MessagePart;
 }
+
+export type Mails = {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  text: string;
+  date: string;
+  read: boolean;
+  labels: string[];
+};

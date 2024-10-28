@@ -24,13 +24,27 @@ import { CalendarDateRangePicker } from "@/components/dashboard/date-range-picke
 import { Overview } from "@/components/dashboard/overview";
 import { RecentSales } from "@/components/dashboard/recent-sales";
 import Image from "next/image";
+import { accounts } from "@/components/mail/data";
 import { Mail } from "@/components/mail/components/mail";
-import { accounts, mails } from "@/components/mail/data";
+import { GoogleAPI } from "@/services/API/googleApi/inbox";
+import { useEffect, useState } from "react";
+import { Mails } from "@/model/email";
+import { atom } from "jotai";
 
-export const description = "A collection of health charts.";
+const emailAtom = atom<Mails[]>([]);
 
 export default function dashboard() {
   const { setTheme } = useTheme();
+  const [emails, setEmail] = useState<Mails[]>([]);
+
+  useEffect(() => {
+    GoogleAPI.getGoogleInboxAPI().then((response) => {
+      setEmail(response?.data);
+    });
+  }, []);
+
+  console.log(emails);
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-muted/40">
@@ -223,7 +237,7 @@ export default function dashboard() {
                     <div className="hidden flex-col md:flex">
                       <Mail
                         accounts={accounts}
-                        mails={mails}
+                        mails={emails}
                         navCollapsedSize={4}
                         defaultLayout={undefined}
                       />

@@ -4,11 +4,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/prisma";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { Email } from "@/model/email";
+import { Mails } from "@/model/email";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Email[] | { message: string }>
+  res: NextApiResponse<Mails[] | { message: string }>
 ) {
   try {
     const session = await getServerSession(req, res, authOptions);
@@ -28,8 +28,8 @@ export default async function handler(
 
     const messagesResponse = await gmail.users.messages.list({
       userId: "me",
-      labelIds: ["INBOX"], // Filtra mensagens apenas da caixa de entrada
-      maxResults: 10, // Limita o número de resultados (ajuste conforme necessário)
+      labelIds: ["INBOX"],
+      maxResults: 10,
     });
 
     const messages = messagesResponse.data.messages;
@@ -37,18 +37,30 @@ export default async function handler(
       return res.status(200).json({ message: "No messages found in inbox." });
     }
 
+    const parseMessage = (message: gmail_v1.Schema$Message): Mails => {
+      const header = message.payload?.headers || [];
+      const getHeader = (name: string) =>
+        header.find((header) => header.name === name)?.value || "";
+      return {
+        id: message.id || "",
+        name: getHeader("From").split(" <")[0],
+        email: getHeader("From").split(" <")[1]?.replace(">", "") || "",
+        subject: getHeader("Subject"),
+        text: message.snippet || "",
+        date: getHeader("Date"),
+        read: message.labelIds?.includes("UNREAD") === false,
+        labels: message.labelIds || [],
+      };
+    };
+
     // Obter o conteúdo de cada mensagem
-    const messagesData: Email[] = await Promise.all(
+    const messagesData: Mails[] = await Promise.all(
       messages.map(async (msg) => {
         const message = await gmail.users.messages.get({
           userId: "me",
           id: msg.id as string,
         });
-        return {
-          id: msg.id as string,
-          snippet: message.data.snippet as string,
-          payload: message.data.payload as gmail_v1.Schema$MessagePart,
-        };
+        return parseMessage(message.data);
       })
     );
 

@@ -34,11 +34,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Mail } from "../data";
 import { addDays, addHours, format, nextSaturday } from "date-fns";
+import { Mails } from "@/model/email";
 
 interface MailDisplayProps {
-  mail: Mail | null;
+  mail: Mails | null;
 }
 
 export function MailDisplay({ mail }: MailDisplayProps) {

@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import "@/styles/globals.css";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
-import { useReportWebVitals } from "next/web-vitals";
 
 const roboto = Roboto({
   weight: ["400", "700"],
@@ -16,9 +15,6 @@ export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
-  useReportWebVitals((metric) => {
-    console.log(metric);
-  });
   return (
     <ThemeProvider
       attribute="class"
