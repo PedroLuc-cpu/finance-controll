@@ -57,6 +57,7 @@ export default async function handler(
         const message = await gmail.users.messages.get({
           userId: "me",
           id: msg.id as string,
+          
         });
         return parseMessage(message.data);
       })
