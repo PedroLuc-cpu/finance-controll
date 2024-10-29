@@ -19,8 +19,6 @@ export default async function handler(
     });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    console.log(user);
-
     const gmail = google.gmail({
       version: "v1",
       auth: await getGoogleAuthToken(user.id),
