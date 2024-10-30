@@ -21,9 +21,8 @@ model User {
   // Optional for WebAuthn support
   Authenticator     Authenticator[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Payment   Payment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -46,17 +45,6 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-}
-
-model Payment {
-  id          String   @id @default(cuid())
-  description String
-  amount      Float
-  type        String
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
 }
 
 model Session {
@@ -92,4 +80,51 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+model Produto {
+  id           String     @id @default(uuid())
+  nome         String
+  descricao    String?
+  categoria    String?
+  codigoBarras String?
+  marca        String?
+  // Informações do Fornecedor
+  fornecedor   Fornecedor @relation(fields: [fornecedorId], references: [id])
+  fornecedorId String
+
+  // Informações de Estoque
+  unidadeMedida     String
+  quantidadeEstoque Int
+  precoCusto        Float
+  precoVenda        Float
+  dataValidade      DateTime?
+
+  // Informações de Controle de Qualidade
+  lote               String?
+  dataFabricacao     DateTime?
+  certificadoINMETRO String?
+
+  // Informações Regulamentares
+  registroANVISA String?
+  avisoLegal     String?
+
+  // Outros
+  pesoBruto   Float?
+  pesoLiquido Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Fornecedor {
+  id       String    @id @default(uuid())
+  nome     String
+  cnpj     String
+  endereco String
+  telefone String
+  produtos Produto[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
