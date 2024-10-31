@@ -137,7 +137,7 @@ export default function cadastrar() {
                         </TabsTrigger>
                         <TabsTrigger value="adicionais">Adicionais</TabsTrigger>
                       </TabsList>
-                      <TabsContent value="tributacoes" className="space-y-2">
+                      <TabsContent value="informacoes" className="space-y-2">
                         <div className="flex gap-2">
                           <FormField
                             control={form.control}
@@ -316,7 +316,7 @@ export default function cadastrar() {
                           />
                         </div>
                       </TabsContent>
-                      <TabsContent value="adicionais">
+                      <TabsContent value="tributacoes" className="space-y-2">
                         <div className="flex gap-4">
                           <FormField
                             control={form.control}
@@ -441,7 +441,7 @@ export default function cadastrar() {
                           />
                         </div>
                       </TabsContent>
-                      <TabsContent value="informacoes">
+                      <TabsContent value="adicionais" className="space-y-2">
                         <FormField
                           control={form.control}
                           name="fornecedor"
@@ -689,7 +689,7 @@ export default function cadastrar() {
                                   <Input placeholder="peso bruto" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                  Avisos obrigatórios no rótulo, se houver{" "}
+                                  Peso do produto com embalagem{" "}
                                 </FormDescription>
                               </FormItem>
                             )}
@@ -707,8 +707,55 @@ export default function cadastrar() {
                                   />
                                 </FormControl>
                                 <FormDescription>
-                                  Avisos obrigatórios no rótulo, se houver{" "}
+                                  Peso do produto sem embalagem{" "}
                                 </FormDescription>
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="flex gap-4">
+                          <FormField
+                            control={form.control}
+                            name="dimensoes.altura"
+                            render={({ field }) => (
+                              <FormItem className="flex-1">
+                                <FormLabel>Altura</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="altura do produto"
+                                    {...field}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="dimensoes.largura"
+                            render={({ field }) => (
+                              <FormItem className="flex-1">
+                                <FormLabel>largura</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="largura do produto"
+                                    {...field}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="dimensoes.profundidade"
+                            render={({ field }) => (
+                              <FormItem className="flex-1">
+                                <FormLabel>profundidade</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="profundidade do produto"
+                                    {...field}
+                                  />
+                                </FormControl>
                               </FormItem>
                             )}
                           />
