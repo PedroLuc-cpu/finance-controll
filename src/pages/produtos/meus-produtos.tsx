@@ -5,6 +5,7 @@ import { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { Produto } from "@/model/produtos";
 import { DataTable } from "@/components/payments/data-table";
 import { columns } from "@/components/payments/columns";
+import { Button } from "@/components/ui/button";
 
 export const getStaticProps = (async (context) => {
   const res = await fetch("http://localhost:3000/api/produtos/todosprodutos");

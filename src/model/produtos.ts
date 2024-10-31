@@ -19,6 +19,7 @@ export interface Produto {
 
   // Informações do Fornecedor
   fornecedor: {
+    id: string;
     nome: string;
     cnpj: string;
     endereco: string;

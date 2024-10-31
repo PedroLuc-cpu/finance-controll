@@ -37,6 +37,7 @@ import { Label } from "@/components/ui/label";
 import { Copy } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 interface DataTableProps {
   columns: ColumnDef<Produto, unknown>[];
@@ -96,7 +97,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-4 gap-2 justify-between">
         <Input
           className="max-w-sm"
           placeholder="Filtrar seu produto"
@@ -105,6 +106,9 @@ export function DataTable({ columns, data }: DataTableProps) {
             table.getColumn("nome")?.setFilterValue(e.target.value)
           }
         />
+        <Link href={"/produtos/cadastrar"}>
+          <Button>Cadastrar</Button>
+        </Link>
       </div>
       <div className="rounded-md border">
         <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
@@ -241,7 +245,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                   </TableHead>
                 ))}
@@ -263,7 +267,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}
