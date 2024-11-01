@@ -44,9 +44,13 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { GetStaticProps, InferGetServerSidePropsType } from "next";
+import { CadastrarMarca } from "@/components/produto-marca";
 
 const schemaProduto = z.object({
-  nome: z.string().min(10, { message: "Deve ter no minimo 10 caracteres" }),
+  nome: z
+    .string({ required_error: "O nome do produto é obrigatório" })
+    .min(10, { message: "Deve ter no minimo 10 caracteres" }),
   descricao: z
     .string()
     .min(10, {
@@ -97,7 +101,38 @@ const schemaProduto = z.object({
   tags: z.string(),
 });
 
-export default function cadastrar() {
+const schemaMarca = z.object({
+  id: z.string(),
+  marca: z.string().min(4, { message: "Deve ter no minimo 4 caracteres" }),
+});
+
+const schemaCategorias = z.object({
+  id: z.string(),
+  categoria: z.string().min(4, { message: "Deve ter no minimo 4 caracteres" }),
+});
+
+export const getStaticProps = (async () => {
+  const res_marca = await fetch(
+    "http://localhost:3000/api/produtos/marca/listar"
+  );
+  const res_categoria = await fetch(
+    "http://localhost:3000/api/produtos/categoria/listar"
+  );
+  const marcas: z.infer<typeof schemaMarca>[] = await res_marca.json();
+
+  const categorias: z.infer<typeof schemaCategorias>[] =
+    await res_categoria.json();
+
+  return { props: { marcas, categorias } };
+}) satisfies GetStaticProps<{
+  marcas: z.infer<typeof schemaMarca>[];
+  categorias: z.infer<typeof schemaCategorias>[];
+}>;
+
+export default function cadastrar({
+  marcas,
+  categorias,
+}: InferGetServerSidePropsType<typeof getStaticProps>) {
   const form = useForm<z.infer<typeof schemaProduto>>({
     resolver: zodResolver(schemaProduto),
   });
@@ -105,6 +140,8 @@ export default function cadastrar() {
   function onSubmit(data: z.infer<typeof schemaProduto>) {
     console.log(data);
   }
+
+
 
   return (
     <SidebarProvider>
@@ -192,41 +229,7 @@ export default function cadastrar() {
                             name="marca"
                             render={({ field }) => (
                               <FormItem className="flex-1">
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <p className="cursor-pointer underline text-sm">
-                                      marca
-                                    </p>
-                                  </DialogTrigger>
-                                  <DialogContent className="dark:bg-zinc-900">
-                                    <DialogHeader>
-                                      <DialogTitle>Nova Marca</DialogTitle>
-                                      <DialogDescription>
-                                        Caso não tenha a marca desejada,
-                                        cadastre aqui
-                                      </DialogDescription>
-                                    </DialogHeader>
-                                    <div className="grid gap-4 py-4">
-                                      <div className="grid grid-cols-4 items-center gap-4">
-                                        <Label
-                                          htmlFor="marca"
-                                          className="text-right"
-                                        >
-                                          Marca
-                                        </Label>
-                                        <Input
-                                          id="marca"
-                                          className="col-span-3"
-                                        />
-                                      </div>
-                                    </div>
-                                    <DialogFooter>
-                                      <Button type="button">
-                                        Salvar alterações
-                                      </Button>
-                                    </DialogFooter>
-                                  </DialogContent>
-                                </Dialog>
+                                <CadastrarMarca />
                                 <Select
                                   onValueChange={field.onChange}
                                   defaultValue={field.value}
@@ -237,13 +240,11 @@ export default function cadastrar() {
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="cocacola">
-                                      Coca Cola
-                                    </SelectItem>
-                                    <SelectItem value="reis">Reis</SelectItem>
-                                    <SelectItem value="piracajuba">
-                                      Piracajuba
-                                    </SelectItem>
+                                    {marcas.map((m) => (
+                                      <SelectItem value={m.id} key={m.id}>
+                                        {m.marca}
+                                      </SelectItem>
+                                    ))}
                                   </SelectContent>
                                 </Select>
                               </FormItem>
@@ -299,16 +300,11 @@ export default function cadastrar() {
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="Frios">Frios</SelectItem>
-                                    <SelectItem value="Laticinios">
-                                      Laticinios
-                                    </SelectItem>
-                                    <SelectItem value="Gelados">
-                                      Gelados
-                                    </SelectItem>
-                                    <SelectItem value="Bebidas">
-                                      Bebidas
-                                    </SelectItem>
+                                    {categorias.map((c) => (
+                                      <SelectItem value={c.id} key={c.id}>
+                                        {c.categoria}
+                                      </SelectItem>
+                                    ))}
                                   </SelectContent>
                                 </Select>
                               </FormItem>
@@ -689,7 +685,7 @@ export default function cadastrar() {
                                   <Input placeholder="peso bruto" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                  Peso do produto com embalagem{" "}
+                                  Avisos obrigatórios no rótulo, se houver{" "}
                                 </FormDescription>
                               </FormItem>
                             )}
@@ -707,55 +703,8 @@ export default function cadastrar() {
                                   />
                                 </FormControl>
                                 <FormDescription>
-                                  Peso do produto sem embalagem{" "}
+                                  Avisos obrigatórios no rótulo, se houver{" "}
                                 </FormDescription>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="flex gap-4">
-                          <FormField
-                            control={form.control}
-                            name="dimensoes.altura"
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormLabel>Altura</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="altura do produto"
-                                    {...field}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="dimensoes.largura"
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormLabel>largura</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="largura do produto"
-                                    {...field}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="dimensoes.profundidade"
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormLabel>profundidade</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="profundidade do produto"
-                                    {...field}
-                                  />
-                                </FormControl>
                               </FormItem>
                             )}
                           />
