@@ -86,9 +86,11 @@ model Produto {
   id           String     @id @default(uuid())
   nome         String
   descricao    String?
-  categoria    String?
+  categoria    Categoria? @relation(fields: [categoriaId], references: [id])
+  categoriaId  String?
   codigoBarras String?
-  marca        String?
+  marca        Marca?     @relation(fields: [marcaId], references: [id])
+  marcaId      String?
   // Informações do Fornecedor
   fornecedor   Fornecedor @relation(fields: [fornecedorId], references: [id])
   fornecedorId String
@@ -127,4 +129,16 @@ model Fornecedor {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Marca {
+  id      String    @id @default(uuid())
+  marca   String
+  Produto Produto[]
+}
+
+model Categoria {
+  id        String    @id @default(uuid())
+  categoria String
+  Produto   Produto[]
 }

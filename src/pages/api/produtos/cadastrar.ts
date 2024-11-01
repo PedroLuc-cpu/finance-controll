@@ -62,7 +62,6 @@ export default async function handler(
         avisoLegal,
         pesoBruto,
         pesoLiquido,
-        Tags: Tags,
       },
     });
 

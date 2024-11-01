@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
 import { prisma } from "@/prisma";
+import { authOptions } from "../../auth/[...nextauth]";
 
 export default async function handle(
   req: NextApiRequest,
@@ -9,22 +9,22 @@ export default async function handle(
 ) {
   const session = await getServerSession(req, res, authOptions);
 
-  const id = req.query.id as string;
+  const categorias = req.query.marca as string;
 
   if (session) {
     if (req.method === "GET") {
-      if (!id) {
-        return res.status(400).json({ message: "ID do produto não fornecido" });
-      }
-
-      const produto = await prisma.produto.findUnique({
-        where: { id: id },
+      const categoria = await prisma.categoria.findMany({
+        where: {
+          categoria: {
+            contains: categorias,
+          },
+        },
       });
 
-      if (produto) {
-        return res.status(200).json(produto);
+      if (categoria.length > 0) {
+        return res.status(200).json(categoria);
       } else {
-        return res.status(404).json({ message: "Produto não encontrado" });
+        return res.status(404).json({ message: "Categoria não encontrada" });
       }
     } else {
       return res.status(405).json({ message: "Método não permitido" });
