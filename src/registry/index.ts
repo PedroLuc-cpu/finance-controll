@@ -9,12 +9,12 @@ import { v0 } from "@/registry/registry-v0";
 import { Registry } from "@/registry/schema";
 
 export const registry: Registry = [
-  ...ui,
-  ...examples,
-  ...blocks,
-  ...charts,
-  ...lib,
-  ...hooks,
-  ...themes,
-  ...v0,
+	...ui,
+	...examples,
+	...blocks,
+	...charts,
+	...lib,
+	...hooks,
+	...themes,
+	...v0,
 ];
