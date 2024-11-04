@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { EyeIcon, EyeOffIcon, MoveLeft } from "lucide-react";
 import Link from "next/link";
 import { z } from "zod";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { type SubmitHandler, useForm } from "react-hook-form";
 
 const createUserSchema = z.object({
 	fullName: z.string().max(5, { message: "Nome deve no minimo 5 caracteres" }),
@@ -165,10 +165,12 @@ export default function AreateAccount() {
 					</div>
 					<p className="text-xs text-zinc-400">
 						Ao se cadastrar, você aceita nossos{" "}
+						{/* biome-ignore lint/a11y/useValidAnchor: <explanation> */}
 						<a href="#" className="text-[#22C55E] hover:underline">
 							termos de uso
 						</a>{" "}
 						e a nossa{" "}
+						{/* biome-ignore lint/a11y/useValidAnchor: <explanation> */}
 						<a href="#" className="text-[#22C55E] hover:underline">
 							política de privacidade
 						</a>

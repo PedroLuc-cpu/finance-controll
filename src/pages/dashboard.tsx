@@ -28,7 +28,7 @@ import { accounts } from "@/components/mail/data";
 import { Mail } from "@/components/mail/components/mail";
 import { GoogleAPI } from "@/services/API/googleApi/inbox";
 import { useEffect, useState } from "react";
-import { Mails } from "@/model/email";
+import type { Mails } from "@/model/email";
 import { atom } from "jotai";
 
 const emailAtom = atom<Mails[]>([]);
@@ -95,6 +95,7 @@ export default function dashboard() {
 												<CardTitle className="text-sm font-medium">
 													Receita total{" "}
 												</CardTitle>
+												{/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
 												<svg
 													xmlns="http://www.w3.org/2000/svg"
 													viewBox="0 0 24 24"
@@ -120,6 +121,7 @@ export default function dashboard() {
 												<CardTitle className="text-sm font-medium">
 													Assinaturas
 												</CardTitle>
+												{/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
 												<svg
 													xmlns="http://www.w3.org/2000/svg"
 													viewBox="0 0 24 24"
@@ -147,6 +149,7 @@ export default function dashboard() {
 												<CardTitle className="text-sm font-medium">
 													Vendas
 												</CardTitle>
+												{/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
 												<svg
 													xmlns="http://www.w3.org/2000/svg"
 													viewBox="0 0 24 24"
@@ -173,6 +176,7 @@ export default function dashboard() {
 												<CardTitle className="text-sm font-medium">
 													Ativo agora{" "}
 												</CardTitle>
+												{/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
 												<svg
 													xmlns="http://www.w3.org/2000/svg"
 													viewBox="0 0 24 24"

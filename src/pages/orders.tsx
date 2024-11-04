@@ -45,8 +45,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppHeader } from "@/layout/app-header";
 import { AppSidebar } from "@/layout/app-sidebar";
-import { Clientes } from "@/model/clientes";
-import { Pedidos } from "@/model/pedidos";
+import type { Clientes } from "@/model/clientes";
+import type { Pedidos } from "@/model/pedidos";
 import { DialogTitle } from "@radix-ui/react-dialog";
 
 import {
@@ -59,7 +59,7 @@ import {
 	MoreVertical,
 	Truck,
 } from "lucide-react";
-import { GetStaticProps, InferGetServerSidePropsType } from "next";
+import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 
 export const getStaticProps = (async (context) => {
 	console.log(context);
