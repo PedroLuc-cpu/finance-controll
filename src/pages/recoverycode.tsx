@@ -1,55 +1,78 @@
-"use client";
-
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+// import Image from "next/image";
+import Link from "next/link";
 
-export default function RecoveryCode() {
+export default function Recoverycode() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#121214] text-white">
-      <Card className="w-full max-w-md bg-[#202024] border-[#202024]">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            Código de recuperação
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4">
-            <div className="space-y-4 flex justify-center">
-              <InputOTP maxLength={6} className="">
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                </InputOTPGroup>
-                <InputOTPSeparator />
-                <InputOTPGroup>
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="flex justify-start px-4">
+          {/* <Image
+            src="/placeholder.svg"
+            alt="Stripe"
+            className="h-8 w-auto"
+            width={82}
+            height={32}
+          /> */}
+        </div>
+        <Card className="border-none shadow-lg">
+          <CardHeader>
+            <h1 className="text-xl dark:text-white font-semibold text-slate-900">
+              Faça redefinição com seu código
+            </h1>
+            <p className="text-sm dark:text-zinc-500 text-slate-600">
+              Para continuar, insira o código de verificação de 6 dígitos gerado
+              pelo aplicativo autenticador.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex justify-center gap-2">
+                <InputOTP maxLength={6}>
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={0}
+                      className="w-12 h-12 text-center text-lg font-medium"
+                    />
+                    <InputOTPSlot
+                      index={1}
+                      className="w-12 h-12 text-center text-lg font-medium"
+                    />
+                    <InputOTPSlot
+                      index={2}
+                      className="w-12 h-12 text-center text-lg font-medium"
+                    />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot
+                      index={3}
+                      className="w-12 h-12 text-center text-lg font-medium"
+                    />
+                    <InputOTPSlot
+                      index={4}
+                      className="w-12 h-12 text-center text-lg font-medium"
+                    />
+                    <InputOTPSlot
+                      index={5}
+                      className="w-12 h-12 text-center text-lg font-medium"
+                    />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
             </div>
-            <Button className="w-full text-white">Enviar Código</Button>
-          </form>
-          <div className="mt-6">
-            <Link
-              href="/signIn"
-              className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar para o login
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+            <Button className="w-full text-white">Continuar</Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
