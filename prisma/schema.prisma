@@ -8,20 +8,22 @@ generator client {
 }
 
 model User {
-  id                   String          @id @default(cuid())
-  name                 String?         @unique
-  email                String?         @unique
-  password             String?
-  passwordResetCode    String?         @default("")
-  passwordResetExpires DateTime?
-  confirmedPassword    String?
-  emailVerified        DateTime?
-  isNotification       String?
-  image                String?
-  accounts             Account[]
-  sessions             Session[]
+  id                    String          @id @default(cuid())
+  name                  String?         @unique
+  email                 String?         @unique
+  password              String?
+  passwordResetCode     String?         @default("")
+  passwordResetExpires  DateTime?
+  passwordResetAttempts Int             @default(0)
+  lastResetAttempt      DateTime?
+  confirmedPassword     String?
+  emailVerified         DateTime?
+  isNotification        String?
+  image                 String?
+  accounts              Account[]
+  sessions              Session[]
   // Optional for WebAuthn support
-  Authenticator        Authenticator[]
+  Authenticator         Authenticator[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
