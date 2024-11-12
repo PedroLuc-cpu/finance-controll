@@ -10,14 +10,6 @@ import { signIn, useSession } from "next-auth/react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 
 const schemaSignIn = z.object({
   email: z.string().email({ message: "use um email válido" }),
@@ -27,7 +19,7 @@ const schemaSignIn = z.object({
 });
 
 export default function SignIn() {
-  const form = useForm<z.infer<typeof schemaSignIn>>({
+  const { handleSubmit, register } = useForm<z.infer<typeof schemaSignIn>>({
     resolver: zodResolver(schemaSignIn),
     defaultValues: {
       email: "",
@@ -55,36 +47,51 @@ export default function SignIn() {
         <h2 className="text-2xl font-bold mb-6 text-center">
           Acesse sua conta
         </h2>
-        <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="w-full bg-[#202024] border-[#202024] text-white placeholder-gray-400"
-                      placeholder="seu email"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <a
-              href="recovery"
-              className="block text-sm text-gray-500 hover:text-gray-400 hover:underline"
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-2">
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-gray-200"
             >
-              Esqueci minha senha
-            </a>
-            <Button type="submit" className="w-full text-white">
-              Entrar
-            </Button>
-          </form>
-        </Form>
+              E-mail
+            </label>
+            <Input
+              {...register("email")}
+              id="email"
+              type="email"
+              placeholder="Seu email"
+              className="w-full bg-[#202024] border-[#202024] text-white placeholder-gray-400 pr-10"
+            />
+          </div>
+          <div className="relative">
+            <Input
+              {...register("password")}
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Sua senha"
+              className="w-full bg-[#202024] border-[#202024] text-white placeholder-gray-400 pr-10"
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5 text-gray-400" />
+              ) : (
+                <Eye className="h-5 w-5 text-gray-400" />
+              )}
+            </button>
+          </div>
+
+          <a
+            href="recovery"
+            className="block text-sm text-gray-500 hover:text-gray-400 hover:underline"
+          >
+            Esqueci minha senha
+          </a>
+          <Button className="w-full text-white">Entrar</Button>
+        </form>
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-400 mb-2">Ou se preferir</p>
           <div className="flex gap-2">
