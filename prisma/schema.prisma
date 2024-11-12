@@ -146,3 +146,36 @@ model Categoria {
   categoria String
   Produto   Produto[]
 }
+
+model Cliente {
+  id             String    @id @default(uuid())
+  nome           String
+  documento      String
+  email          String    @unique
+  telefone       Telefone? @relation(fields: [telefoneId], references: [id])
+  endereco       Endereco? @relation(fields: [enderecoId], references: [id])
+  dataNascimento DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  enderecoId     String?
+  telefoneId     String?
+}
+
+model Endereco {
+  id        String    @id @default(uuid())
+  rua       String
+  numero    String
+  bairro    String
+  cidade    String
+  estado    String
+  cep       String
+  clienteId Int
+  Cliente   Cliente[]
+}
+
+model Telefone {
+  id           String    @id @default(uuid())
+  telefone     String
+  departamento String
+  Cliente      Cliente[]
+}
