@@ -8,7 +8,7 @@ type Data = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>,
+  res: NextApiResponse<Data>
 ) {
   if (req.method === "POST") {
     const { name, email, password, confirmedPassword, isNotification, image } =
@@ -37,8 +37,7 @@ export default async function handler(
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Cria o usuário
-      const user = await prisma.user.create({
+      await prisma.user.create({
         data: {
           name,
           email,
