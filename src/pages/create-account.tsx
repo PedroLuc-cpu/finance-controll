@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { EyeIcon, EyeOffIcon, MoveLeft } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Loader2, MoveLeft } from "lucide-react";
 import Link from "next/link";
 import { z } from "zod";
 import { type SubmitHandler, useForm } from "react-hook-form";
+import { api } from "@/lib/axios";
+import { useRouter } from "next/router";
 
 const createUserSchema = z.object({
-  fullName: z.string().max(5, { message: "Nome deve no minimo 5 caracteres" }),
+  name: z.string().max(5, { message: "Nome deve no minimo 5 caracteres" }),
   email: z.string().email(),
   passaword: z.string(),
   confirmedPassaword: z.string(),
@@ -20,37 +22,27 @@ const createUserSchema = z.object({
 export type UserSchema = z.infer<typeof createUserSchema>;
 
 export default function AreateAccount() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { register, handleSubmit } = useForm<UserSchema>();
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<UserSchema>();
 
   const onSubmit: SubmitHandler<UserSchema> = async (data) => {
     try {
-      console.log(data);
-      const response = await fetch("/api/user/create-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: data.fullName,
-          email: data.email,
-          password: data.passaword,
-          confirmedPassword: data.confirmedPassaword,
-          isNotification: data.isNotification,
-        }),
+      await api.post("/user/create-user", {
+        name: data.name,
+        email: data.email,
+        password: data.passaword,
+        confirmedPassword: data.confirmedPassaword,
+        isNotification: data.isNotification,
       });
-
-      if (response.ok) {
-        const result = await response.json();
-        alert("Usuário criado com sucesso!");
-      } else {
-        const errorData = await response.json();
-        alert(`Erro ao criar usuário: ${errorData.message}`);
-      }
+      await router.push("/signIn");
     } catch (error) {
-      alert("Erro ao se comunicar com o servidor. Tente novamente.");
-      console.error("Erro ao se comunicar com a API:", error);
+      console.log(error);
     }
   };
 
@@ -75,7 +67,7 @@ export default function AreateAccount() {
               Nome completo
             </Label>
             <Input
-              {...register("fullName", { required: true })}
+              {...register("name", { required: true })}
               id="fullName"
               placeholder="Seu nome completo"
               className="w-full bg-[#202024] border-[#202024] text-white placeholder-gray-400"
@@ -177,8 +169,9 @@ export default function AreateAccount() {
             </a>
             .
           </p>
-          <Button className="w-full text-white">
+          <Button className="w-full text-white" disabled={isSubmitting}>
             Cadastrar-se gratuitamente
+            {isSubmitting && <Loader2 className="animate-spin" />}
           </Button>
         </form>
       </div>

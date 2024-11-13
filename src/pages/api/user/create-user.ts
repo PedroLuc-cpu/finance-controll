@@ -11,7 +11,7 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   if (req.method === "POST") {
-    const { name, email, password, confirmedPassword, isNotification, image } =
+    const { name, email, password, confirmedPassword, isNotification } =
       req.body;
 
     // Validação básica
@@ -44,7 +44,6 @@ export default async function handler(
           password: hashedPassword, // Idealmente, você deve hashear a senha antes de salvar no banco
           confirmedPassword: hashedPassword, // Por razões de segurança, isso não deve ser salvo; apenas para validação no código
           isNotification: isNotification ?? "off",
-          image,
         },
       });
 

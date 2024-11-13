@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Chrome, Eye, EyeOff, Github } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Chrome, Eye, EyeOff, Github, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const schemaSignIn = z.object({
@@ -18,8 +18,14 @@ const schemaSignIn = z.object({
     .max(10, { message: "sua senha deve ter no máximo 10 caracteres" }),
 });
 
+type TSignIn = z.infer<typeof schemaSignIn>;
+
 export default function SignIn() {
-  const { handleSubmit, register } = useForm<z.infer<typeof schemaSignIn>>({
+  const {
+    handleSubmit,
+    register,
+    formState: { isSubmitting },
+  } = useForm<TSignIn>({
     resolver: zodResolver(schemaSignIn),
     defaultValues: {
       email: "",
@@ -34,9 +40,17 @@ export default function SignIn() {
     router.push("create-account");
   };
 
-  function onSubmit(values: z.infer<typeof schemaSignIn>) {
-    console.log(values);
-  }
+  const onSubmit: SubmitHandler<TSignIn> = async (data) => {
+    try {
+      await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+      });
+      // router.push("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#121214] text-white">
@@ -90,7 +104,10 @@ export default function SignIn() {
           >
             Esqueci minha senha
           </a>
-          <Button className="w-full text-white">Entrar</Button>
+          <Button className="w-full text-white" disabled={isSubmitting}>
+            Entrar
+            {isSubmitting && <Loader2 className="animate-spin" />}
+          </Button>
         </form>
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-400 mb-2">Ou se preferir</p>

@@ -20,7 +20,6 @@ export default async function handler(
   }
 
   try {
-    // Buscar o usuário pelo email
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -37,8 +36,6 @@ export default async function handler(
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Senha inválida" });
     }
-
-    // Gerar o token JWT
     const token = jwt.sign(
       {
         id: user.id,
@@ -49,7 +46,6 @@ export default async function handler(
       { expiresIn: "1h" }
     );
 
-    // Retornar o token para o cliente
     return res.status(200).json({
       message: "Login bem-sucedido",
       token,
@@ -57,5 +53,5 @@ export default async function handler(
   } catch (error) {
     console.error("Erro ao tentar logar o usuário:", error);
     return res.status(500).json({ message: "Erro interno do servidor" });
-  }
+  }""
 }
