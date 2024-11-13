@@ -87,18 +87,26 @@ model Authenticator {
 }
 
 model Produto {
-  id           String     @id @default(uuid())
+  id           String      @id @default(uuid())
   nome         String
   descricao    String?
-  categoria    Categoria? @relation(fields: [categoriaId], references: [id])
+  categoria    Categoria?  @relation(fields: [categoriaId], references: [id])
   categoriaId  String?
   codigoBarras String?
-  marca        Marca?     @relation(fields: [marcaId], references: [id])
+  marca        Marca?      @relation(fields: [marcaId], references: [id])
   marcaId      String?
   // Informações do Fornecedor
-  fornecedor   Fornecedor @relation(fields: [fornecedorId], references: [id])
-  fornecedorId String
+  fornecedor   Fornecedor? @relation(fields: [fornecedorId], references: [id])
+  fornecedorId String?
 
+  ncm               String?
+  cest              String?
+  cfop              String?
+  origem            String?
+  aliquotaICMS      Float?
+  aliquotaIPI       Float?
+  aliquotaPIS       Float?
+  aliquotaCONFIS    Float?
   // Informações de Estoque
   unidadeMedida     String
   quantidadeEstoque Int
@@ -114,13 +122,23 @@ model Produto {
   // Informações Regulamentares
   registroANVISA String?
   avisoLegal     String?
-
+  dimensao       Dimensao? @relation(fields: [dimensaoId], references: [id])
+  dimensaoId     String?
   // Outros
-  pesoBruto   Float?
-  pesoLiquido Float?
+  pesoBruto      Float?
+  pesoLiquido    Float?
+  tags           String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Dimensao {
+  id           String    @id @default(uuid())
+  altura       Float?
+  largura      Float?
+  profundidade Float?
+  Produto      Produto[]
 }
 
 model Fornecedor {

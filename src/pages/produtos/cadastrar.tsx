@@ -1,29 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -33,92 +11,26 @@ import {
 } from "@/components/ui/select";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { AppHeader } from "@/layout/app-header";
 import { AppSidebar } from "@/layout/app-sidebar";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DialogTitle } from "@radix-ui/react-dialog";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import type { GetStaticProps, InferGetServerSidePropsType } from "next";
-import { CadastrarMarca } from "@/components/produto-marca";
+import { schemaProduto } from "@/model/produtos";
+import { api } from "@/lib/axios";
+import { useRouter } from "next/router";
 
-const schemaProduto = z.object({
-  nome: z
-    .string()
-    .min(10, { message: "nome deve ter no minimo 10 caracteres" }),
-  descricao: z
-    .string()
-    .min(10, {
-      message: "descrição deve ter pelo menos 10 caracteres.",
-    })
-    .max(160, {
-      message: "descrição não deve ter mais de 30 caracteres.",
-    }),
-  categoria: z.string(),
-  codigoBarras: z.string(),
-  marca: z.string(),
-
-  ncm: z.string(),
-  cest: z.string(),
-  cfop: z.string(),
-  origem: z.string(),
-  aliquotaICMS: z.coerce
-    .number()
-    .nonnegative({ message: "aliquota ICMS não deve ser negativo" }),
-  aliquotaIPI: z.coerce
-    .number()
-    .nonnegative({ message: "aliquota IPI não deve ser negativo" }),
-  aliquotaPIS: z.coerce
-    .number()
-    .nonnegative({ message: "aliquota PIS não deve ser negativo" }),
-  aliquotaCONFIS: z.coerce
-    .number()
-    .nonnegative({ message: "aliquota CONFIS não deve ser negativo" }),
-
-  // fornecedor: z.object({
-  //   id: z.string(),
-  //   nome: z.string(),
-  //   cnpj: z.string(),
-  //   endereco: z.string(),
-  //   telefone: z.string(),
-  // }),
-  unidadeMedia: z.coerce.number(),
-  quantidadeEstoque: z.coerce.number(),
-  precoCusto: z.coerce
-    .number()
-    .nonnegative({ message: "preço de custo não deve ser negativo" }),
-  precoVenda: z.coerce
-    .number()
-    .nonnegative({ message: "preço de venda não deve ser negativo" }),
-  dataValidade: z.date(),
-  lote: z.string(),
-  dataFabricacao: z.date(),
-  certficadoINMETRO: z.string(),
-
-  registroANVISA: z.string(),
-  avisoLegal: z.string(),
-
-  pesoBruto: z.coerce
-    .number()
-    .nonnegative({ message: "peso bruto não deve ser negativo" }),
-  pesoLiquido: z.coerce
-    .number()
-    .nonnegative({ message: "peso liquido não deve ser negativo" }),
-  dimensoes: z.object({
-    altura: z.number().nonnegative({ message: "altura não deve ser negativo" }),
-    largura: z.coerce
-      .number()
-      .nonnegative({ message: "largura não deve ser negativo" }),
-    profundidade: z.coerce
-      .number()
-      .nonnegative({ message: "profundidade não deve ser negativo" }),
-  }),
-  // tags: z.string(),
-});
+type TProdutoCadastro = z.infer<typeof schemaProduto>;
 
 const schemaMarca = z.object({
   id: z.string(),
@@ -152,12 +64,74 @@ export default function cadastrar({
   marcas,
   categorias,
 }: InferGetServerSidePropsType<typeof getStaticProps>) {
-  const form = useForm<z.infer<typeof schemaProduto>>({
+  const form = useForm<TProdutoCadastro>({
     resolver: zodResolver(schemaProduto),
+    defaultValues: {
+      nome: "",
+      descricao: "",
+      categoria: {
+        id: "",
+        nome: "",
+      },
+      codigoBarras: "",
+      marca: {
+        id: "",
+        nome: "",
+      },
+      ncm: "",
+      cest: "",
+      cfop: "",
+      origem: "",
+      aliquotaICMS: 0,
+      aliquotaIPI: 0,
+      aliquotaPIS: 0,
+      aliquotaCONFIS: 0,
+      unidadeMedida: "",
+      quantidadeEstoque: 0,
+      precoCusto: 0,
+      precoVenda: 0,
+      lote: "",
+      certficadoINMETRO: "",
+      registroANVISA: "",
+      avisoLegal: "",
+      pesoBruto: 0,
+      pesoLiquido: 0,
+      dimensoes: {
+        altura: 0,
+        largura: 0,
+        profundidade: 0,
+      },
+      tags: "",
+    },
   });
+  const router = useRouter();
 
-  function onSubmit(data: z.infer<typeof schemaProduto>) {
-    console.log(data);
+  async function onSubmit(data: TProdutoCadastro) {
+    try {
+      await api.post("/produtos/cadastrar", {
+        nome: data.nome,
+        descricao: data.descricao,
+        //categoriaId: ,
+        codigoBarras: data.codigoBarras,
+        //marcaId,
+        fornecedorId: "70201d6d-52f2-4b63-913c-7eb9f4f0d389",
+        unidadeMedida: data.unidadeMedida,
+        quantidadeEstoque: data.quantidadeEstoque,
+        precoCusto: data.precoCusto,
+        precoVenda: data.precoVenda,
+        dataValidade: "2025-12-31T00:00:00Z",
+        lote: data.lote,
+        dataFabricacao: "2023-06-15T00:00:00Z",
+        certificadoINMETRO: data.certficadoINMETRO,
+        registroANVISA: data.registroANVISA,
+        avisoLegal: data.avisoLegal,
+        pesoBruto: data.pesoBruto,
+        pesoLiquido: data.pesoLiquido,
+      });
+      await router.push("/produtos/meus-produtos");
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -175,21 +149,25 @@ export default function cadastrar({
                   Cadastrar produtos
                 </h2>
               </div>
-              <div>
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="py-4 space-y-8"
-                  >
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-8 max-w-5xl mx-auto"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="codigoBarras"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Codigos de barras</FormLabel>
+                          <FormLabel>Código de Barras</FormLabel>
                           <FormControl>
-                            <Input placeholder="codigo de barra" {...field} />
+                            <Input
+                              placeholder="Digite o código de barras"
+                              {...field}
+                            />
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -197,14 +175,95 @@ export default function cadastrar({
                       control={form.control}
                       name="nome"
                       render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel>Nome</FormLabel>
+                        <FormItem>
+                          <FormLabel>Nome do Produto</FormLabel>
                           <FormControl>
                             <Input
-                              id="nome"
-                              placeholder="nome do produto"
+                              placeholder="Digite o nome do produto"
                               {...field}
                             />
+                          </FormControl>
+                          <FormDescription>
+                            O nome do produto deve ter pelo menos 10 caracteres.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="descricao"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Descrição</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Digite a descrição do produto"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          A descrição deve ter entre 10 e 160 caracteres.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="categoria.id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Categoria</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione uma categoria" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="eletronicos">
+                                Eletrônicos
+                              </SelectItem>
+                              <SelectItem value="roupas">Roupas</SelectItem>
+                              <SelectItem value="alimentos">
+                                Alimentos
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="marca.id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Marca</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Digite a marca" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="ncm"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>NCM</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Digite o NCM" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -212,146 +271,27 @@ export default function cadastrar({
                     />
                     <FormField
                       control={form.control}
-                      name="descricao"
+                      name="cest"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Descrição</FormLabel>
+                          <FormLabel>CEST</FormLabel>
                           <FormControl>
-                            <Textarea
-                              className="resize-none"
-                              placeholder="descrição do produto"
-                              {...field}
-                            />
+                            <Input placeholder="Digite o CEST" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="flex gap-4">
-                      <FormField
-                        control={form.control}
-                        name="marca"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <CadastrarMarca />
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="escolha a marca do seu produto" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {marcas.map((m) => (
-                                  <SelectItem value={m.id} key={m.id}>
-                                    {m.marca}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="categoria"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <p className="cursor-pointer underline text-sm">
-                                  Categoria
-                                </p>
-                              </DialogTrigger>
-                              <DialogContent className="dark:bg-zinc-900">
-                                <DialogHeader>
-                                  <DialogTitle>Nova Categoria</DialogTitle>
-                                  <DialogDescription>
-                                    Caso não tenha a categoria desejada,
-                                    cadastre aqui
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="grid gap-4 py-4">
-                                  <div className="grid grid-cols-4 items-center gap-4">
-                                    <Label
-                                      htmlFor="marca"
-                                      className="text-right"
-                                    >
-                                      Categoria
-                                    </Label>
-                                    <Input id="marca" className="col-span-3" />
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <Button type="button">
-                                    Salvar alterações
-                                  </Button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="escolha a categoria do seu produto" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {categorias.map((c) => (
-                                  <SelectItem value={c.id} key={c.id}>
-                                    {c.categoria}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="flex gap-4">
-                      <FormField
-                        control={form.control}
-                        name="ncm"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>Ncm</FormLabel>
-                            <FormControl>
-                              <Input placeholder="NCM do produto" {...field} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="cest"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>Cest</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="CEST do produto"
-                                disabled={!form.watch("ncm")}
-                                {...field}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
                     <FormField
                       control={form.control}
                       name="cfop"
                       render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel>Cfop</FormLabel>
+                        <FormItem>
+                          <FormLabel>CFOP</FormLabel>
                           <FormControl>
-                            <Input placeholder="CFOP do produto" {...field} />
+                            <Input placeholder="Digite o CFOP" {...field} />
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -359,341 +299,306 @@ export default function cadastrar({
                       control={form.control}
                       name="origem"
                       render={({ field }) => (
-                        <FormItem className="flex-1">
+                        <FormItem>
                           <FormLabel>Origem</FormLabel>
                           <FormControl>
-                            <Input placeholder="Origem" {...field} />
+                            <Input placeholder="Digite a origem" {...field} />
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="flex gap-4 py-3">
-                      <FormField
-                        control={form.control}
-                        name="aliquotaICMS"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>aliquota ICMS</FormLabel>
-                            <FormControl>
-                              <Input placeholder="aliquota ICMS" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="aliquotaIPI"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>aliquota IPI</FormLabel>
-                            <FormControl>
-                              <Input placeholder="aliquota IPI" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="aliquotaPIS"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>aliquota PIS</FormLabel>
-                            <FormControl>
-                              <Input placeholder="aliquota PIS" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="aliquotaCONFIS"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>aliquota COFINS</FormLabel>
-                            <FormControl>
-                              <Input placeholder="aliquota COFINS" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* <FormField
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <FormField
                       control={form.control}
-                      name="fornecedor"
+                      name="aliquotaICMS"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Fornecedor</FormLabel>
-                          <Select onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione um fornecedor" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="fornecedor@example.com">
-                                fornecedor@example.com
-                              </SelectItem>
-                              <SelectItem value="fornecedor@google.com">
-                                fornecedor@google.com
-                              </SelectItem>
-                              <SelectItem value="fornecedor@support.com">
-                                fornecedor@support.com
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    /> */}
-                    <FormField
-                      control={form.control}
-                      name="unidadeMedia"
-                      render={({ field }) => (
-                        <FormItem className="py-4">
-                          <FormLabel>Unidade Media</FormLabel>
-                          <Select onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione a unidade medida" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="kg">KG</SelectItem>
-                              <SelectItem value="und">UND</SelectItem>
-                              <SelectItem value="cx">CX</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormDescription>
-                            (ex: "kg", "unidade")
-                          </FormDescription>
-                        </FormItem>
-                      )}
-                    />
-                    <div className="flex gap-4">
-                      <FormField
-                        control={form.control}
-                        name="precoCusto"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>Preço de custo</FormLabel>
-                            <FormControl>
-                              <Input placeholder="custo" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="precoVenda"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>Preço Venda</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Venda" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="dataValidade"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col py-4">
-                          <FormLabel>Data de validade</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant="outline"
-                                  className={cn(
-                                    "w-[240px] pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground"
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, "P")
-                                  ) : (
-                                    <span>Escolha data</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date("1900-01-01")
-                                }
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormDescription>
-                            Para produtos perecíveis
-                          </FormDescription>
+                          <FormLabel>Alíquota ICMS (%)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite a alíquota ICMS"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                     <FormField
                       control={form.control}
-                      name="dataFabricacao"
+                      name="aliquotaIPI"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col py-4">
-                          <FormLabel>Data de fabricação</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant="outline"
-                                  className={cn(
-                                    "w-[240px] pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground"
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, "P")
-                                  ) : (
-                                    <span>Escolha data</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date("1900-01-01")
-                                }
-                              />
-                            </PopoverContent>
-                          </Popover>
+                        <FormItem>
+                          <FormLabel>Alíquota IPI (%)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite a alíquota IPI"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="flex gap-4">
-                      <FormField
-                        control={form.control}
-                        name="certficadoINMETRO"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>certficado inmetro</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="certficado inmetro"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Para produtos que precisam de certificação
-                            </FormDescription>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="lote"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>Lote</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Lote do produto" {...field} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="registroANVISA"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>registro da anvisa</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="registro da anvisa"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Para produtos regulados pela ANVISA (ex:
-                              medicamentos, cosméticos)
-                            </FormDescription>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="avisoLegal"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>aviso legal</FormLabel>
-                            <FormControl>
-                              <Input placeholder="aviso legal" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              Avisos obrigatórios no rótulo, se houver{" "}
-                            </FormDescription>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="flex gap-4 py-4">
-                      <FormField
-                        control={form.control}
-                        name="pesoBruto"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>peso bruto</FormLabel>
-                            <FormControl>
-                              <Input placeholder="peso bruto" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              Avisos obrigatórios no rótulo, se houver{" "}
-                            </FormDescription>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="pesoLiquido"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>peso liquido</FormLabel>
-                            <FormControl>
-                              <Input placeholder="peso liquido" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              Avisos obrigatórios no rótulo, se houver{" "}
-                            </FormDescription>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <Button type="submit">Salvar</Button>
-                  </form>
-                </Form>
-              </div>
+                    <FormField
+                      control={form.control}
+                      name="aliquotaPIS"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Alíquota PIS (%)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite a alíquota PIS"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="aliquotaCONFIS"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Alíquota CONFIS (%)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite a alíquota CONFIS"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="unidadeMedida"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Unidade de Medida</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite a unidade de medida"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="quantidadeEstoque"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Quantidade em Estoque</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite a quantidade em estoque"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="precoCusto"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preço de Custo</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite o preço de custo"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="precoVenda"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preço de Venda</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite o preço de venda"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lote"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Lote</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Digite o lote" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="certficadoINMETRO"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Certificado INMETRO</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite o certificado INMETRO"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="registroANVISA"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Registro ANVISA</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite o registro ANVISA"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="avisoLegal"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Aviso Legal</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Digite o aviso legal"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="pesoBruto"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Peso Bruto (kg)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite o peso bruto"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="pesoLiquido"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Peso Líquido (kg)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite o peso líquido"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="dimensoes.altura"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Altura (cm)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Digite a altura" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="dimensoes.largura"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Largura (cm)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Digite a largura" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="dimensoes.profundidade"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Profundidade (cm)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Digite a profundidade"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tags</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Digite as tags separadas por vírgula"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit">Registrar Produto</Button>
+                </form>
+              </Form>
             </div>
           </div>
         </div>

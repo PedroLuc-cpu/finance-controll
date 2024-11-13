@@ -1,71 +1,50 @@
-import { prisma } from "@/prisma";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { schemaProduto } from "@/model/produtos";
+import { PrismaClient } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
+const prisma = new PrismaClient();
 
-export default async function handler(
+export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "POST") {
-    return res
-      .status(405)
-      .json({ error: "Método não permitido. Use o método POST." });
-  }
-
   try {
-    const {
-      nome,
-      descricao,
-      categoria,
-      codigoBarras,
-      marca,
-      fornecedorId,
-      unidadeMedida,
-      quantidadeEstoque,
-      precoCusto,
-      precoVenda,
-      dataValidade,
-      lote,
-      dataFabricacao,
-      certificadoINMETRO,
-      registroANVISA,
-      avisoLegal,
-      pesoBruto,
-      pesoLiquido,
-    } = req.body;
-
-    // Validação mínima de campos obrigatórios
-    if (!nome || !descricao || !codigoBarras) {
-      return res.status(400).json({
-        error: "Os campos nome, descricao, codigoBarras são obrigatórios.",
-      });
-    }
+    // Validar os dados com Zod
+    const produtoData = schemaProduto.parse(req.body);
 
     const produto = await prisma.produto.create({
       data: {
-        nome,
-        descricao,
-        categoria,
-        codigoBarras,
-        marca,
-        fornecedorId: fornecedorId,
-        unidadeMedida,
-        quantidadeEstoque,
-        precoCusto,
-        precoVenda,
-        dataValidade,
-        lote,
-        dataFabricacao,
-        certificadoINMETRO,
-        registroANVISA,
-        avisoLegal,
-        pesoBruto,
-        pesoLiquido,
+        nome: produtoData.nome,
+        descricao: produtoData.descricao,
+        categoriaId: produtoData.categoria?.id || null,
+        codigoBarras: produtoData.codigoBarras,
+        marcaId: produtoData.marca?.id || null,
+        ncm: produtoData.ncm || null,
+        cest: produtoData.cest || null,
+        cfop: produtoData.cfop || null,
+        origem: produtoData.origem || null,
+        aliquotaICMS: produtoData.aliquotaICMS,
+        aliquotaIPI: produtoData.aliquotaIPI,
+        aliquotaPIS: produtoData.aliquotaPIS,
+        aliquotaCONFIS: produtoData.aliquotaCONFIS,
+        unidadeMedida: produtoData.unidadeMedida,
+        quantidadeEstoque: produtoData.quantidadeEstoque,
+        precoCusto: produtoData.precoCusto,
+        precoVenda: produtoData.precoVenda,
+        lote: produtoData.lote || null,
+        certificadoINMETRO: produtoData.certficadoINMETRO || null,
+        registroANVISA: produtoData.registroANVISA || null,
+        avisoLegal: produtoData.avisoLegal || null,
+        pesoBruto: produtoData.pesoBruto,
+        pesoLiquido: produtoData.pesoLiquido,
+        dimensaoId: produtoData.dimensoes?.id ? produtoData.dimensoes.id : null,
+        tags: produtoData.tags || null,
       },
     });
 
+    // Responder com o produto criado
     return res.status(201).json(produto);
   } catch (error) {
-    console.error("Erro ao criar produto:", error);
+    console.error(error);
     return res.status(500).json({
       error: "Ocorreu um erro ao criar o produto. Tente novamente mais tarde.",
     });

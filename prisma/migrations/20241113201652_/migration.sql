@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE "Produto" ADD COLUMN "aliquotaCONFIS" REAL;
+ALTER TABLE "Produto" ADD COLUMN "aliquotaICMS" REAL;
+ALTER TABLE "Produto" ADD COLUMN "aliquotaIPI" REAL;
+ALTER TABLE "Produto" ADD COLUMN "aliquotaPIS" REAL;
+ALTER TABLE "Produto" ADD COLUMN "cest" TEXT;
+ALTER TABLE "Produto" ADD COLUMN "cfop" TEXT;
+ALTER TABLE "Produto" ADD COLUMN "npm" TEXT;
+ALTER TABLE "Produto" ADD COLUMN "origem" TEXT;

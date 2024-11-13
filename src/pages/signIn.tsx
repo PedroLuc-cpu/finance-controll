@@ -1,6 +1,5 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Chrome, Eye, EyeOff, Github, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +14,7 @@ const schemaSignIn = z.object({
   email: z.string().email({ message: "use um email válido" }),
   password: z
     .string()
-    .max(10, { message: "sua senha deve ter no máximo 10 caracteres" }),
+    .min(10, { message: "sua senha deve ter no máximo 10 caracteres" }),
 });
 
 type TSignIn = z.infer<typeof schemaSignIn>;
@@ -40,13 +39,14 @@ export default function SignIn() {
     router.push("create-account");
   };
 
+  console.log(session);
+
   const onSubmit: SubmitHandler<TSignIn> = async (data) => {
     try {
       await signIn("credentials", {
         email: data.email,
         password: data.password,
       });
-      // router.push("/dashboard");
     } catch (error) {
       console.log(error);
     }
@@ -71,6 +71,7 @@ export default function SignIn() {
             </label>
             <Input
               {...register("email")}
+              disabled={isSubmitting}
               id="email"
               type="email"
               placeholder="Seu email"
@@ -80,7 +81,7 @@ export default function SignIn() {
           <div className="relative">
             <Input
               {...register("password")}
-              id="password"
+              disabled={isSubmitting}
               type={showPassword ? "text" : "password"}
               placeholder="Sua senha"
               className="w-full bg-[#202024] border-[#202024] text-white placeholder-gray-400 pr-10"
