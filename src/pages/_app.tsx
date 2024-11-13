@@ -4,31 +4,34 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import "@/styles/globals.css";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
+import { ToastProvider } from "@/components/ui/toast";
 
 const roboto = Roboto({
-	weight: ["400", "700"],
-	subsets: ["latin"],
-	display: "swap",
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export default function App({
-	Component,
-	pageProps: { session, ...pageProps },
+  Component,
+  pageProps: { session, ...pageProps },
 }: AppProps) {
-	return (
-		<ThemeProvider
-			attribute="class"
-			defaultTheme="system"
-			enableSystem
-			disableTransitionOnChange
-		>
-			<SessionProvider session={session} baseUrl="/signIn">
-				<TooltipProvider>
-					<main className={roboto.className}>
-						<Component {...pageProps} />
-					</main>
-				</TooltipProvider>
-			</SessionProvider>
-		</ThemeProvider>
-	);
+  return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <SessionProvider session={session} baseUrl="/signIn">
+        <ToastProvider>
+          <TooltipProvider>
+            <main className={roboto.className}>
+              <Component {...pageProps} />
+            </main>
+          </TooltipProvider>
+        </ToastProvider>
+      </SessionProvider>
+    </ThemeProvider>
+  );
 }

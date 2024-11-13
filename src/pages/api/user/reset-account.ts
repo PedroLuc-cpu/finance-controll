@@ -15,11 +15,45 @@ export default async function handler(
   const { email } = req.body;
   const resetCode = crypto.randomInt(100000, 999999).toString();
 
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    return res
+      .status(404)
+      .json({ error: "Email não encontrado na base de dados." });
+  }
+
+  // Verifica a contagem de tentativas e o tempo da última tentativa
+  const now = new Date();
+  const oneHour = 60 * 60 * 1000; // 1 hora em milissegundos
+
+  if (
+    user.passwordResetAttempts >= 3 &&
+    user.lastResetAttempt &&
+    now.getTime() - new Date(user.lastResetAttempt).getTime() < oneHour
+  ) {
+    return res.status(429).json({
+      error:
+        "Você excedeu o número de tentativas de recuperação. Tente novamente após 1 hora.",
+    });
+  }
+
+  // Se passou 1 hora desde a última tentativa, resetamos a contagem
+  const shouldResetAttempts =
+    user.lastResetAttempt &&
+    now.getTime() - new Date(user.lastResetAttempt).getTime() >= oneHour;
+
   await prisma.user.update({
     where: { email },
     data: {
       passwordResetCode: resetCode,
       passwordResetExpires: new Date(Date.now() + 3 * 60 * 1000),
+      passwordResetAttempts: shouldResetAttempts
+        ? 1
+        : user.passwordResetAttempts + 1,
+      lastResetAttempt: now,
     },
   });
 

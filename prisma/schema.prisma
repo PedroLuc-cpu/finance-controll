@@ -8,20 +8,22 @@ generator client {
 }
 
 model User {
-  id                   String          @id @default(cuid())
-  name                 String?         @unique
-  email                String?         @unique
-  password             String?
-  passwordResetCode    String?         @default("")
-  passwordResetExpires DateTime?
-  confirmedPassword    String?
-  emailVerified        DateTime?
-  isNotification       String?
-  image                String?
-  accounts             Account[]
-  sessions             Session[]
+  id                    String          @id @default(cuid())
+  name                  String?         @unique
+  email                 String?         @unique
+  password              String?
+  passwordResetCode     String?         @default("")
+  passwordResetExpires  DateTime?
+  passwordResetAttempts Int             @default(0)
+  lastResetAttempt      DateTime?
+  confirmedPassword     String?
+  emailVerified         DateTime?
+  isNotification        String?
+  image                 String?
+  accounts              Account[]
+  sessions              Session[]
   // Optional for WebAuthn support
-  Authenticator        Authenticator[]
+  Authenticator         Authenticator[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -143,4 +145,37 @@ model Categoria {
   id        String    @id @default(uuid())
   categoria String
   Produto   Produto[]
+}
+
+model Cliente {
+  id             String    @id @default(uuid())
+  nome           String
+  documento      String
+  email          String    @unique
+  telefone       Telefone? @relation(fields: [telefoneId], references: [id])
+  endereco       Endereco? @relation(fields: [enderecoId], references: [id])
+  dataNascimento DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  enderecoId     String?
+  telefoneId     String?
+}
+
+model Endereco {
+  id        String    @id @default(uuid())
+  rua       String
+  numero    String
+  bairro    String
+  cidade    String
+  estado    String
+  cep       String
+  clienteId Int
+  Cliente   Cliente[]
+}
+
+model Telefone {
+  id           String    @id @default(uuid())
+  telefone     String
+  departamento String
+  Cliente      Cliente[]
 }

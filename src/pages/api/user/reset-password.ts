@@ -7,7 +7,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method !== "POST") {
-    return res.status(404).json({ message: "Method not supported" });
+    return res.status(404).json({ message: "Método não suportado" });
   }
 
   const { email, resetCode, newPassword } = req.body;
